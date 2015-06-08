@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+	<meta name="description" content="WUD is a customised search engine helping you to pull, link and organise data from two major cultural heritage repositories: Europeana and DPLA"/>
+	<title>WUD</title>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="css/styles.css">
+
+	<script src="libs/html5shiv.js"></script>
+</head>
+
+<body ng-app="wudApp" ng-controller="SearchController" scroll class="{{panelactive}}" ng-class="{subContent:isSubmenuactive}" ng-init="initApp()" mobile-search-type>
+
+	<div id="wrapper-header" class="container-fluid">
+		<header id="main-header">
+			<div class="navbar navbar-fixed">
+				<div class="container">
+					<nav class="navbar-header">
+	 					
+						<a href="http://www.unifr.ch/mh/fr" target="_blank" id="logo-unifr"><img src="img/logo/uni-fr.png" alt="logo unifr" width="34" height="34"></a>
+							
+						<a href="#" id="logo"><span class="heading-brand">WUD</span></a> 
+
+						<div id="search-on-scroll" class="" ng-class="{onscroll:boolScroll}">
+							<form id="small-search-form" ng-submit="search()" ng-top>
+								<div class="input-group">
+									<div class="input-group-btn" dropdown is-open="status.isopen">
+								      <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+								        Type <span class="caret"></span>
+								      </button>
+								      <ul id="search-types-small" class="dropdown-menu" role="menu">
+								      	<li ng-repeat="type in querytype" ng-click="getType(type)"><a href="#" >{{ type }}</a></li>
+								      </ul>
+								    </div>
+									<div id="small-basic" class="search-small" ng-show="basicinput">
+							      		<input type="text" id="small-search-input" class="form-control" placeholder="Enter search terms..." ng-model="basicquery">
+							      		<a href="#" ng-hide="cancelbasicbtn" class="remove-search cancelSearch"><i class="icon-cancel-circled-4"></i></a>
+							     	</div> 
+
+							     	<div id="small-boolean" class="row search-small" ng-show="booleaninput">
+							     		<div id="inner-small-boolean">
+							     			<div class="input-group">
+							     				<input id="boolean-first-small" type="text" class="form-control" name="term1" placeholder="first term" ng-model="booleanquery.first">
+							     				<a href="#" ng-hide="cancelfirstbtn" id="term1" class="remove-boolean term1 cancelBooleanFirst"><i class="icon-cancel-circled-4"></i></a>
+							     			</div>
+							     		</div>
+							     		<div id="boolean-select-btn-small" class="btn-group" >
+									        <label class="btn btn-default" ng-model="operator" ng-click="checkOperator('AND')" btn-radio="'AND'" uncheckable>AND</label>
+									        <label class="btn btn-default" ng-model="operator" ng-click="checkOperator('OR')" btn-radio="'OR'" uncheckable>OR</label>
+									    </div>
+							     		<div class="input-group">
+						     				<input id="boolean-second-small"  type="text" class="form-control" name="term2" placeholder="second term" ng-model="booleanquery.second">
+						     				<a href="#" ng-hide="cancelsecondbtn" id="term2" class="remove-boolean term2 cancelBooleanSecond"><i class="icon-cancel-circled-4"></i></a>
+						     			</div>
+							     	</div>
+
+							     	<span id="submit-btn-small" class="input-group-btn">
+							        	<button type="submit" id="small-search-submit" class="btn btn-default" type="submit"><i class="icon-search-5"></i></button>
+							      	</span>
+
+								</div>
+							</form>
+
+						</div>
+
+						<ul id="inner-menu" options-menu>
+							<li ng-repeat="(key, val) in menuList">
+								<a href="#" id="{{val.title}}" class="btn-link" ng-click="setMenuState(val.title)" ng-class="{active:val.state}" tooltip-placement="bottom" tooltip="{{val.title}}">
+									<i class="{{val.icon}}"></i>
+									<i id="{{val.title}}-status" class="icon-ok-circle status" ng-class="{active:val.status}"></i>
+									<span ng-if="val.title == 'favorites'" id="favorites-indicator" >{{favoritesIndicator}}</span>
+								</a>
+							</li>
+							<li>
+								<span>|</span>
+							</li>
+							 <li>
+								<a href="about/" target="_blank" id="about" class="btn-link" tooltip-placement="bottom" tooltip="About WUD">
+									<i class="icon-info-2"></i>
+								</a>
+							</li>
+						</ul>
+
+					</nav>
+				</div>
+			</div>
+
+			<section id="main-search" class="" ng-class="{'onscroll':boolScroll, 'open-favorites':hasFavorites}">
+				<div id="main-bg"></div>
+				<div class="overlay"></div>
+
+				<section id="main-search-wrapper">
+					<div class="container">
+
+						<div id="inner-main-search">
+							
+							<div role="searchtype">
+
+							  <ul id="querychoice" class="nav nav-tabs" role="tablist" ng-click="reset()">
+							    <li role="searchtype" class="active" ng-class="{active:linkbasicclass}">
+							    	<a href aria-controls="typebasic" ng-click="getType(querytype[0])" role="tab" data-toggle="tab">{{ querytype[0] }}</a>
+							    </li>
+							    <li role="searchtype">
+							    	<span>|</span>
+							    </li>
+							    <li role="searchtype" class="" ng-class="{active:linkbooleanclass}">
+							    	<a href aria-controls="typeboolean" ng-click="getType(querytype[1])" role="tab" data-toggle="tab">{{ querytype[1] }}</a>
+							    </li>
+							  </ul>
+							  
+							  <form id="big-search-form" ng-submit="search()" ng-top>
+								
+								<div id="basic-container" rel="basic" class="active" ng-show="basicinput">
+									<input type="text" id="search-input" class="form-control big-input" name="main-search" placeholder="Enter search terms..." ng-model="basicquery">
+									<a href="#" ng-hide="cancelbasicbtn" class="remove-search cancelSearch"><i class="icon-cancel-circled-4"></i></a>
+									<button type="submit" class="btn boolean-search-btn"><i class="icon-search-5"></i></button> 
+								</div>
+								
+							    <div id="boolean-container" rel="boolean" ng-show="booleaninput">
+									<input type="text" name="term1" id="boolean-first" class="form-control big-input boolean-input" placeholder="first term" ng-model="booleanquery.first">
+									<a href="#" id="term1" ng-hide="cancelfirstbtn" class="remove-boolean cancelBooleanFirst"><i class="icon-cancel-circled-4"></i></a>
+								     <div id="boolean-select-btn" class="btn-group" >
+								        <label class="btn btn-default" ng-model="operator" ng-click="checkOperator('AND')" btn-radio="'AND'" uncheckable>AND</label>
+								        <label class="btn btn-default" ng-model="operator" ng-click="checkOperator('OR')" btn-radio="'OR'" uncheckable>OR</label>
+								    </div>
+									<input type="text" name="term2" id="boolean-second" class="form-control big-input boolean-input" placeholder="second term" ng-model="booleanquery.second">
+									<a href="#" id="term2" ng-hide="cancelsecondbtn" class="remove-boolean cancelBooleanSecond"><i class="icon-cancel-circled-4"></i></a>
+									<button type="submit" class="btn boolean-search-btn"><i class="icon-search-5"></i></button> 
+								</div>
+
+							  </form>
+
+							</div>
+
+							<h2><a href="about/" target="_blank">WUD</a> is a customised search engine helping you to pull, link and organise data from two major cultural heritage repositories: <a href="http://www.europeana.eu/" target="_blank">Europeana</a> and <a href="http://dp.la/" target="_blank">DPLA</a><sup><a href="about/" target="_blank" id="main-info">*</a></sup></h2>
+						</div>
+						
+					</div>
+				</section>
+			</section>
+			
+			<section id="options">
+				<div id="subcontent" class="" ng-class="{'open':getSubcontentCurrentState(), 'no-scroll':!boolScroll ,'open-favorites':hasFavorites}" options-subcontent>
+
+					<div class="inner-subcontent" ng-class="{open:getSubcontentCurrentState()}">
+
+						<section id="section-timeline" class="sub-section">
+							<div id="timeline" class="col-md-4 inner-sub-section" ng-class="{active:getCurrentState('timeline')}" >
+								<div class="panel panel-default" option-timeline>
+									<div class="panel-heading header-panel">
+										<h3 class="panel-title icon-hourglass-1">Timeline</h3>
+										<a href="#" class="icon-cancel-6 close-option" ng-click="closeSubcontentMenu()"></a>
+									</div>
+
+									<div class="panel-body">
+										<p class="info">Filter results on a custom timeline</p>
+										<div class="form-group">
+											<input type="text" id="year-range" value=""  ng-model="timelinevalues" ng-hide="inputTimeline" name="year-range" class="irs-hidden-input" readonly="">
+										</div> 
+									</div>
+									<div class="panel-footer btn-footer">
+										<a href="#" id="reset-timeline" class="btn btn-default" role="button">Reset</a>
+										<button type="submit" id="submit-timeline" ng-click="search()" class="btn btn-success refresh icon-arrows-ccw"></button>
+									</div>
+								</div>
+							</div>
+						</section>
+
+						<section id="section-mediatypes" class="sub-section">
+							<div id="mediatypes" class="col-md-4 inner-sub-section" ng-class="{active:getCurrentState('mediatypes')}">
+								<div class="panel panel-default" option-mediatypes>
+									<div class="panel-heading header-panel">
+										<h3 class="panel-title icon-doc">Mediatypes</h3>
+										<a href="#" class="icon-cancel-6 close-option" ng-click="closeSubcontentMenu()"></a>
+									</div>
+
+									<div class="panel-body" >
+										<p class="info">Select from multiple mediatypes (text, images, video or audio)</p>
+										 <div class="selectors">
+										 	<div class="btn-group" >
+											    <div class="btn-group">
+											        <label ng-repeat="elem in checkModel" tooltip-placement="bottom" tooltip="{{ elem.title }}" ng-click="getMediatypesStatus(elem.state)" ng-model="elem.state" class="btn btn-primary" btn-checkbox>
+											        	<i class="{{ elem.icon }}"></i>	
+											        </label>
+											    </div>
+										    </div>
+										 </div>
+									</div>
+									<div class="panel-footer btn-footer">
+										<a href="#" id="reset-mediatypes" class="btn btn-default" ng-click="resetMediatypes()" role="button">Reset</a>
+										<button type="submit" id="mediatypes-submit" ng-click="search()" class="btn btn-success refresh icon-arrows-ccw"></button>
+									</div>
+								</div>
+							</div>
+						</section>
+
+						<section id="section-language" class="sub-section">
+							<div id="language" class="col-md-4 inner-sub-section" ng-class="{active:getCurrentState('languages')}">
+								<div class="panel panel-default" option-languages>
+
+									<div class="panel-heading header-panel">
+										<h3 class="panel-title icon-globe-4">Languages</h3>
+										<a href="#" class="icon-cancel-6 close-option" ng-click="closeSubcontentMenu()"></a>
+									</div>
+
+									<div class="panel-body" >
+										
+										<p class="info">Limit search to certain language only</p>
+										<div class="selectors">
+											<div class="btn-group">
+										        <label ng-repeat="obj in radioModel" class="btn btn-default" ng-class="{active:obj.state}" ng-click="setRadioModelStatus(obj.title)" >
+										        	<img ng-src="img/{{obj.img}}" alt="{{obj.img}} flag">
+										        </label>
+										    </div>
+										</div>
+									</div>
+									<div class="panel-footer btn-footer">
+										<a href="#" id="reset-language" class="btn btn-default" ng-click="resetRadio()" role="button">Reset</a>
+										<button type="submit" id="language-submit" ng-click="search()" class="btn btn-success refresh icon-arrows-ccw"></button>
+									</div>
+								</div>
+							</div>
+						</section>
+
+						<section id="section-favorites" class="sub-section">
+							<div favorites-subcontent > </div>
+						</section>
+
+					</div>
+
+				</div>
+			</section>
+
+			<section id="infos" info-collapse>
+				<div class="panel-group" id="results-info" role="tablist" aria-multiselectable="true">
+					<div class="panel panel-default">
+						<div class="panel-heading" id="headingOne" role="tab">
+							<div class="panel-title container">
+								<span><span id="total-small">{{ infos.total }}</span> Results for : "<span id="current-query">{{ query }}</span>"</span>
+								<a href="#" ng-click="isCollapsed = !isCollapsed" aria-expanded="true" aria-controls="collapseDetails">
+					          	<span id="link-state-infos" ng-if="isCollapsed">Show</span><span id="link-state-infos" ng-if="!isCollapsed">Hide</span> details
+					        </a>
+							</div>
+						</div>
+					</div>
+					<div collapse="isCollapsed" id="collapseDetails" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+							<div class="container">
+								<div class="row">
+									<div class="col-md-4">
+										<div class="panel panel-default">
+											<div class="panel-body-results">
+												<section class="inner-info">
+													<div id="total-chart" class="icon-chart-bar round-icon"></div>
+													<div class="total"><strong id="totalItems">{{ infos.total }}</strong></div>
+													<div class="title">Total Items</div>
+												</section>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="panel panel-default">
+											<div class="panel-body-results">
+												<section class="inner-info">
+													<div id="current-items" class="icon-eye-1 round-icon"></div>
+											    	<div class="total"><strong id="itemsCount">{{ infos.items }}</strong></div>
+											    	<div class="title">Current Items</div>
+												</section>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="panel panel-default">
+											<div class="panel-body-results">
+												<section class="inner-info-progress">
+													<div id="data-source"></div>
+													<div class="total">
+														<div class="col-sm-6 results-logo">
+															<div class="col-sm-12">
+																<img src="img/logo/edm-logo.jpg" alt="edm-logo">
+															</div>
+															<div class="col-sm-12">
+																<strong id="countedm">{{ infos.edm }}</strong>
+																<div class="title">Results</div>
+															</div>
+														</div>
+														<div class="col-sm-6 results-logo">
+															<div class="col-sm-12">
+																<img src="img/logo/dpla-logo.jpg" alt="dpla-logo">
+															</div>
+															<div class="col-sm-12">
+																<strong id="countdpla">{{ infos.dpla }}</strong>
+																<div class="title">Results</div>
+															</div>
+														</div>
+													</div>
+												</section>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</header>
+	</div>
+
+	<nav id="detail-container" class="menu slide-menu-right">
+		<div id="inner-panel">
+			<div id="menu-panel">
+				<ul>
+					<li>
+						<a href="#" class="detail-top-menu close-detail close-menu noLink" ng-click="hidepanel()">
+							<div class="icon-cancel-6 icon-menu-top"></div>
+							<div class="link-detail">Close panel</div>
+						</a>
+					</li>
+					<li>
+						<a href="{{ detail.link }}" target="_blank" id="link-type-detail" class="detail-top-menu">
+							<div class="icon-link-ext-alt icon-menu-top"></div>
+							<div class="link-detail">{{ detail.api }}</div>
+						</a>
+					</li>
+					<li>
+						<a href="{{ detail.source }}" target="_blank" id="link-source" class="detail-top-menu">
+							<div class="icon-link-1 icon-menu-top"></div>
+							<div class="link-detail">View source</div>
+						</a>
+					</li>
+					<li>
+						<a href="#" id="add-favorite-link" class="detail-top-menu" source-id="{{detail.id}}" favorite-link-detail>
+							<div id="favorite-icon" class="icon-heart-empty icon-menu-top" ng-class="{'active icon-heart-3':isFavoriteDetail}"></div>
+							<div class="link-detail">Add to favorites</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			<div id="container-main-img">
+				<img ng-src="{{ detail.image }}" alt="{{ detail.image }}">
+			</div>
+			
+			<div id="inner-details">
+				<div class="content">
+					<p class="label-title">{{ detail.title }}</p>
+				</div>
+				<div class="content" ng-hide="isdescription">
+					<p class="label-detail" >Description</p>
+					<p id="description-detail">{{ detail.description }}</p>
+				</div>
+				<div class="content" ng-hide="isdate">
+					<span class="panel-label">Date</span>
+					<span id="date-detail">{{ detail.date }}</span>
+				</div> 
+
+				<div class="content" ng-repeat="(key, val) in edmdetails">
+					<p class="label-detail">{{ key }}</p>
+					<p id="description-detail">{{ val }}</p>
+				</div>
+			</div>
+
+			<a href="#" id="load-more-detail" class="btn-more-info btn btn-large btn-danger noLink" ng-hide="loadmoredetail" data-ng-click="loadDetail(detail.id)">
+				<div id="spinnerdetail" ng-hide="spinnerdetail"></div>
+				<span class="more-detail" ng-show="loaderDetailLabel"><i class="icon-plus-circle-1"></i>Load More</span>
+			</a>
+ 
+		</div>
+	</nav>
+	 
+	<main>
+		<div id="itemlist" class="container-fluid" ng-class="{onscroll:boolScroll}">
+			<div ng-repeat="item in items" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+			 	<a href="#" class="elem no-link" ng-click="showpanel(item.id)">
+				 	<div class="panel panel-default">
+				 		<div class="panel-body">
+					 		<div class="container-img">
+					 			<img ng-src="{{ item.image }}" alt="{{ item.image }}">
+					 		</div>
+						</div>
+				 		<div class="panel-footer">{{ item.title }}</div>
+					</div>
+				 	<i class="noLink icon-heart-empty liked" source-id="{{item.id}}" favorite-link-list stop-event></i>
+			 	</a>
+			</div>
+		</div>
+			
+		<div class="container-fluid">
+			<div id="btn-more-parent" class="row">
+				<div id="btn-border-wrap">
+					<div id="btn-more-wrap" class="col-xs-12 col-md-12 col-lg-12" ng-hide="loadmore" data-ng-click="loadMore()">
+						<button id="load-more"  class="btn btn-large btn-danger">
+							<span ng-show="loaderLabel">Load More</span>
+							<span id="spinnerlist" ng-hide="spinnerlist"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<div id="wrapper-pageload" ng-hide="pageloader">
+		<div id="inner-loader" class="container">
+			<span>Loading Data...</span>
+		</div>
+	</div>
+	
+	<div ng-hide="mask" class="mask" ng-click="hidepanel()"></div>
+	
+	<script src="libs/jquery-2.1.3.js"></script>	
+	<script src="libs/angular.js"></script>
+
+	<script src="libs/angular-touch.js"></script>
+	<script src="libs/ui-bootstrap-tpls-0.12.1.min.js"></script>
+	<script src="libs/spin.js"></script>
+	<script src="libs/ion.rangeSlider.js"></script>
+	<script src="libs/fastclick.js"></script>
+
+
+	<!-- Main app entry point -->
+	<script src="js/app.js"></script>
+	
+	<!-- Services -->
+	<script src="js/services/CollectionsService.js"></script>
+	<script src="js/services/DataEDMService.js"></script>
+	<script src="js/services/DataDPLAService.js"></script>
+	<script src="js/services/FavoritesService.js"></script>
+	<script src="js/services/ItemsService.js"></script>
+	<script src="js/services/MainDataService.js"></script>
+	<script src="js/services/ModalService.js"></script>
+	<script src="js/services/OptionsService.js"></script>
+	<script src="js/services/OptionsMenuService.js"></script>
+	<script src="js/services/PaginationService.js"></script>
+
+	<!-- Controllers -->
+	<script src="js/controllers/SearchController.js"></script>
+	
+	<!-- Directives -->
+	<script src="js/directives/CommentDirective.js"></script>
+	<script src="js/directives/FavoritesDirective.js"></script>
+	<script src="js/directives/FormDirective.js"></script>
+	<script src="js/directives/InfosDirective.js"></script>
+	<script src="js/directives/OptionsDirective.js"></script>
+	<script src="js/directives/ScrollDirective.js"></script>
+	
+	<!-- Utils -->	
+	<script src="js/utils/initUtils.js"></script>
+
+</body>
+</html>

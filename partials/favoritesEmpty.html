@@ -1,0 +1,20 @@
+<div id="favorites" class="col-md-4 inner-sub-section" ng-class="{active:getCurrentState('favorites')}">
+	<div class="panel panel-default">
+
+		<div class="panel-heading header-panel">
+			<h3 class="panel-title icon-heart-empty">Favorites</h3>
+			<a href="#" class="icon-cancel-6 close-option" ng-click="closeSubcontentMenu()"></a>
+		</div>
+
+		<div class="panel-body">
+			<div id="favorites-container" >
+				<p class="info">Collect favorites items and save results</p>
+			</div>
+		</div>
+
+		<div class="panel-footer btn-footer">
+			<a href="#" id="delete-favorites" class="btn btn-default" role="button">Delete All Favorites</a>
+			<a href="favorites/" id="export-favorites" target="_blank" class="btn btn-success refresh icon-export">Export</a>
+		</div>
+	</div>
+</div>

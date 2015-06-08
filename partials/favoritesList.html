@@ -1,0 +1,37 @@
+<div id="favorites" class="col-md-7 inner-sub-section has-favorites" ng-class="{active:getCurrentState('favorites')}">
+	<div class="inner-favorites">
+		<div class="panel panel-default panel-favorites">
+			<div class="panel-heading header-panel">
+				<h3 class="panel-title icon-heart-empty">Favorites</h3>
+				<a href="#" class="icon-cancel-6 close-option" ng-click="closeSubcontentMenu()"></a>
+			</div>
+
+			<div class="panel-body">
+				<div id="favorites-container" >
+					<div ng-repeat="item in favoritesList" class="media favorite-item">
+					   <div class="media-left">
+					      <div class="panel panel-default-favorites">
+					         <div class="panel-body">
+					            <div class="container-img-favorites"><img ng-src="{{ item.image }}" alt="favorite image"></div>
+					         </div>
+					      </div>
+					   </div>
+					   <div data-id="{{ item.id }}" class="media-body favorite-details">
+					      <div class="media-heading">{{ item.title }}</div>
+					      <hr>
+					      <p><a href="{{ item.link }}" target="_blank">{{ item.link }}</a></p>
+					      <hr>
+					      <div comment ref-id="{{item.id}}"></div>
+					   </div>
+					   <a href="#" ng-click="deleteFavorite(item.id)" class="delete-favorite"><i class="icon-cancel-circle-1 liked active"></i></a>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel-footer btn-footer">
+				<a href="#" id="delete-favorites" class="btn btn-default" ng-click="deleteFavorites()" role="button">Delete All Favorites</a>
+				<a href="favorites/" id="export-favorites" target="_blank" class="btn btn-success refresh icon-export">Export</a>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,17 @@
+<p class="comment-output">{{ outputcomment }}</p>
+<textarea name="comment" class="comment" cols="75" rows="7" ng-show="textareacomment" ng-model="contentComment" placeholder="Your comment..."></textarea>
+<button type="button" class="btn btn-success addComment" ng-click="addComment()" style="display: inline-block;" ng-show="addcomment">
+	<i class="icon-comment"></i> Add Comment 
+</button>
+<button type="button" class="btn btn-warning editComment" ng-click="editComment()" ng-show="editcomment">
+	<i class="icon-edit"></i> Edit 
+</button>
+<button type="button" class="btn btn-success saveComment" ng-click="saveComment()" ng-show="savecomment">
+	<i class="icon-plus-circle"></i> Save 
+</button>
+<button type="button" class="btn btn-danger deleteComment" ng-click="deleteComment()" ng-show="deletecomment">
+	<i class="icon-cancel-1"></i> Delete 
+</button>
+<button type="button" class="btn btn-danger cancelComment" ng-click="cancelComment()" ng-show="cancelcomment">
+	<i class="icon-cancel-1"></i> Cancel 
+</button>

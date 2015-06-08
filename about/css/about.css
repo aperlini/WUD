@@ -1,0 +1,171 @@
+h3 {
+  font-size: 1.75em;
+  line-height: 1.5em;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
+p {
+	word-wrap:break-word; 
+	text-align: justify;
+}
+
+#favoriteslist {
+	margin-top:20px;
+}
+
+h1.section {
+  height: 17px;
+  letter-spacing: 0.125em;
+  text-align: center;
+  border-bottom: solid 1px #333;
+  vertical-align: middle;
+  color: #333;
+  margin: 0 0 70px;
+  padding: 28px 0;
+}
+
+
+h1.section i {
+  	background: #FFF;
+  	font-size:43px;
+}
+
+h1.section span {
+  width:20%;
+  padding: 20px;
+  background: #FFF;
+}
+ 
+section#main-search #main-bg {
+  height: 255px;
+}
+
+.container-img-favorites {
+  min-width:100%;
+  min-height:100%;
+  max-width:100%;
+  max-height:100%;
+  text-align: left;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  background: #fbfbfb;
+}
+
+.container-img-favorites img {
+  max-height:300px;
+}
+
+.favorite-details {
+  	word-wrap: break-word;
+   max-width: 100%; 
+}
+
+p.title {
+	text-transform: uppercase;
+	letter-spacing:0.1em;
+	font-size:1.2em;
+}
+
+img {
+	max-height:300px;
+}
+
+section#main-search-wrapper {
+	margin:0;
+	padding:0;
+}
+
+#inner-main-search {
+	width:940px;
+	margin:0 auto;
+	line-height:205px;
+	height:205px;
+	padding:0 20px;
+}
+
+#inner-main-search h2 {
+	float:left;
+	text-align: left;
+	line-height:50px;
+	padding-top:0;
+	margin-top:50px;
+	vertical-align: middle;
+	width:75%;
+	border-right:solid 1px #FFF;
+}
+
+#inner-main-search a#searchnow {
+	color:#FFF;
+	float:right;
+	text-decoration: underline;
+}
+
+#inner-main-search a#searchnow:hover {
+	color:rgba(51, 122, 183, 1);
+}
+
+#inner-main-search a#searchnow h4 {
+	/*margin-top:50px;
+	line-height:107px;*/
+}
+
+#inner-main-search h1 a {
+	color:#FFF;
+	text-decoration:none;
+}
+
+#inner-main-search h1 a:hover {
+	text-decoration:underline;
+}
+
+#wrapper {
+	position:relative;
+}
+
+#inner-about {
+	
+	max-width:960px; /* 1170px */
+	margin:0 auto;
+	border-radius:4px;
+}
+
+p {
+	margin-bottom:20px;
+}
+
+p, li {
+	font-size:1.1em;
+	line-height:1.9em;
+}
+
+#inner-about section:first-child {
+	padding:120px 120px 60px;
+}
+
+#inner-about section:last-child {
+	padding:0 120px 120px;
+}
+
+#inner-about section {
+	padding:0 120px 60px;
+}
+
+#main-content-about {
+	/*position:absolute;
+	top:190px;*/
+	margin-top:-100px;
+	background:#FFF;
+	width:100%;
+}
+
+.rounded-bg {
+	border-radius:4px;
+	margin:50px 0;
+	background:#FFF;
+}
+
+#inner-menu {
+	left:0;
+	width:200px;
+}
